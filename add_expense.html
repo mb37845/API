@@ -1,0 +1,148 @@
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="signup.css" media="screen">
+<!------ Include the above in your HEAD tag ---------->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Expense</title>
+   
+	<!--Bootsrap 4 CDN-->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    
+    <!--Fontawesome CDN-->
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+	<!--Custom styles-->
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<div class="container">
+	<div class="d-flex justify-content-center h-100">
+		<div class="card">
+			<div class="card-header">
+				<h3>Add Expense</h3>
+				
+			</div>
+			<div class="card-body">
+				<form id = "signupForm">
+					<div class="input-group form-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fas fa-user"></i></span>
+						</div>
+						<input type="text" class="form-control" id = "source" placeholder="source">
+						
+					</div>
+                    <div class="input-group form-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fas fa-user"></i></span>
+						</div>
+						<input type="text" class="form-control" id = "amount" placeholder="amount">
+						
+					</div>
+					<div class="input-group form-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fas fa-key"></i></span>
+						</div>
+						<input type="text" class="form-control" id = "date" placeholder="date">
+					</div>
+					
+					<div id="message" style="color:white;"></div>
+			        <div id="demo" style="color:white;"></div>
+					<div class="form-group">
+						<input type="submit" value="send" class="btn float-right login_btn">
+					</div>
+				</form>
+				<div class="form-group">
+					<input  onclick = "logout()" type="submit" value="Logout" id="logout" class="btn float-right login_btn">
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</div>
+</body>
+
+<script>
+	let token;
+	window.onload = function() {
+    token = localStorage.getItem('authToken');
+	if(token){}
+	if(!token){window.location.href = 'LogIn.html';}
+	
+};
+
+   document.getElementById('signupForm').addEventListener('submit', function(event) {
+   event.preventDefault(); // Prevent the form from submitting the traditional way
+   add();
+	
+});
+
+	
+ function add() {
+	 const apiUrl ='http://127.0.0.1:5000/Add_expense'; // Replace with your API URL
+	 const source = document.getElementById('source').value;
+	 const amount = parseFloat(document.getElementById('amount').value);
+	 const date = document.getElementById('date').value;
+     
+	 const income_data = {
+         source: source,
+		 amount:amount,
+		 date: date
+	 };
+
+	 fetch(apiUrl, {
+		 method: 'POST',
+		 headers: {
+			 'Content-Type': 'application/json',
+			 'Authorization': 'Bearer '+token
+		 },
+		 body: JSON.stringify(income_data)
+	 })
+	 .then(response =>{
+  
+  const messageDiv = document.getElementById('message');
+
+  if (response.status === 200) {
+	  return response.json().then(data => {
+		  messageDiv.textContent = 'Added successfully!';
+		  // Redirect to another page on successful login
+		  //window.location.href = 'calc.html';
+	  });
+    }
+    else if (response.status === 401 || response.status === 403){
+        messageDiv.textContent = 'Added failed: ' + response.statusText;
+        window.location.href = 'LogIn.html';
+    }
+    else {
+	  messageDiv.textContent = 'Added failed: ' + response.statusText;
+     
+  }
+})
+	 .catch(error => {
+		 const messageDiv = document.getElementById('message');
+		 messageDiv.textContent = 'Error: ' + error.message;
+		 console.error('Error during adding the record:', error);
+	 });
+ 
+  
+ 
+
+
+
+ }
+
+ function logout()
+	{
+    localStorage.removeItem('authToken');
+    window.location.href = 'LogIn.html';
+    }
+
+
+
+ </script>
+
+
+</html>

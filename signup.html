@@ -1,0 +1,123 @@
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="signup.css" media="screen">
+<!------ Include the above in your HEAD tag ---------->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Signup Page</title>
+   
+	<!--Bootsrap 4 CDN-->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    
+    <!--Fontawesome CDN-->
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+	<!--Custom styles-->
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<div class="container">
+	<div class="d-flex justify-content-center h-100">
+		<div class="card">
+			<div class="card-header">
+				<h3>Sign In</h3>
+				<div class="d-flex justify-content-end social_icon">
+					<span><i class="fab fa-facebook-square"></i></span>
+					<span><i class="fab fa-google-plus-square"></i></span>
+					<span><i class="fab fa-twitter-square"></i></span>
+				</div>
+			</div>
+			<div class="card-body">
+				<form id = "signupForm">
+					<div class="input-group form-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fas fa-user"></i></span>
+						</div>
+						<input type="text" class="form-control" id = "user_name" placeholder="username">
+						
+					</div>
+                    <div class="input-group form-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fas fa-user"></i></span>
+						</div>
+						<input type="text" class="form-control" id = "email" placeholder="email">
+						
+					</div>
+					<div class="input-group form-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fas fa-key"></i></span>
+						</div>
+						<input type="password" class="form-control" id = "password" placeholder="password">
+					</div>
+					<div class="row align-items-center remember">
+						<input type="checkbox">Remember Me
+					</div>
+					<div id="message" style="color:white;"></div>
+			        <div id="demo" style="color:white;"></div>
+					<div class="form-group">
+						<input type="submit" value="Signup" class="btn float-right login_btn" >
+					</div>
+				</form>
+			</div>
+			
+		</div>
+	</div>
+</div>
+</body>
+
+
+<script>
+	document.getElementById('signupForm').addEventListener('submit', function(event) {
+	 event.preventDefault(); // Prevent the form from submitting the traditional way
+	 login();
+ });
+ 
+ function login() {
+	 const apiUrl ='http://127.0.0.1:5000/signup'; // Replace with your API URL
+	 const username = document.getElementById('user_name').value;
+	 const email = document.getElementById('email').value;
+	 const password = document.getElementById('password').value;
+ 
+ 
+	 const loginData = {
+		 name: username,
+		 email:email,
+		 password: password
+	 };
+	 //document.getElementById("demo").innerHTML = loginData;
+	 fetch(apiUrl, {
+		 method: 'POST',
+		 headers: {
+			 'Content-Type': 'application/json'
+		 },
+		 body: JSON.stringify(loginData)
+	 })
+	 .then(response =>{
+  
+  const messageDiv = document.getElementById('message');
+  if (response.status === 200) {
+	  return response.json().then(data => {
+		  messageDiv.textContent = 'Signup successful!';
+		  // Redirect to another page on successful login
+		  //window.location.href = 'calc.html';
+	  });
+  } else if (response.status === 404) {
+	  messageDiv.textContent = 'Signup failed: User not found';
+  } else if (response.status === 401) {
+	  messageDiv.textContent = 'Signup failed: Incorrect password or username';
+  } else {
+	  messageDiv.textContent = 'Signup failed: ' + response.statusText;
+  }
+})
+	 .catch(error => {
+		 const messageDiv = document.getElementById('message');
+		 messageDiv.textContent = 'Error: ' + error.message;
+		 console.error('Error during Signup:', error);
+	 });
+ }
+ 
+ </script>
+</html>
